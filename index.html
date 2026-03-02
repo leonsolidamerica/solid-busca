@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Solid Busca</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body {
+  font-family: Arial;
+  text-align: center;
+  margin: 80px;
+}
+input {
+  width: 400px;
+  padding: 10px;
+}
+.result {
+  margin-top: 20px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+.article {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+.article:hover {
+  background: #f3f3f3;
+}
+</style>
+</head>
+<body>
+
+<h1>Solid Busca</h1>
+
+<input type="text" id="search" placeholder="Buscar..." onkeyup="buscar()">
+
+<div id="resultados" class="result"></div>
+
+<script>
+const supabase = supabase.createClient(
+  "SUA_URL_SUPABASE",
+  "SUA_CHAVE_PUBLICA"
+);
+
+async function buscar() {
+  let termo = document.getElementById("search").value;
+
+  if (termo.length < 2) {
+    document.getElementById("resultados").innerHTML = "";
+    return;
+  }
+
+  const { data } = await supabase
+    .from("artigos")
+    .select("*")
+    .ilike("titulo", "%" + termo + "%");
+
+  let html = "";
+
+  data.forEach(item => {
+    html += `
+      <div class="article" onclick="alert('${item.conteudo.replace(/'/g, "\\'")}')">
+        <strong>${item.titulo}</strong>
+      </div>
+    `;
+  });
+
+  document.getElementById("resultados").innerHTML = html;
+}
+</script>
+
+</body>
+</html>
